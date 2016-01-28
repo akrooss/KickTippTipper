@@ -4,7 +4,7 @@ KickTippTipper is an **automative better** for the website [http://www.kicktipp.
 KickTippTipper is written in Python. It uses the RoboBrowser, BeautifulSoup and math libraries.
 
 
-## The bet algorithm
+## Result algorithm
 
 The script uses the latest betting odds for each team of each match. To predict realistic results it subtracts the two numbers and calculates the absolute value. There are three possible results for a match:
 
