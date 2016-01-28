@@ -12,6 +12,7 @@ The script uses the latest betting odds for each team of each match. To predict 
 * If the absolute value is bigger than 8 (one team is way stronger than the other) the result will be **(3:1)**
 * If the absolute value is bigger than 1 but less than 8 (one team is a bit stronger than the other) the result will be **(2:1)**
 
+All match results can optionally be changed.
 
 ## Requirements
 
