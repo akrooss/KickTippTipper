@@ -8,11 +8,11 @@ from bs4 import BeautifulSoup
 import math
 
 
-url_tippabgabe = "your_desktop_bet_page"
-url_tippabgabe_mobile = "your_mobile_bet_page"
+url_tippabgabe = "my_desktop_bet_page"
+url_tippabgabe_mobile = "my_mobile_bet_page"
 url_login = "http://www.kicktipp.de/info/profil/login"
-username = "your_email"
-password = "your_password"
+username = "my_email"
+password = "my_password"
 
 #Possible Results, modify at will
 deuce = [1,1]
