@@ -7,12 +7,7 @@ import robobrowser
 from bs4 import BeautifulSoup
 import math
 
-
-url_tippabgabe = "my_desktop_bet_page"
-url_tippabgabe_mobile = "my_mobile_bet_page"
 url_login = "http://www.kicktipp.de/info/profil/login"
-username = "my_email"
-password = "my_password"
 
 #Possible Results, modify at will
 deuce = [1,1]
@@ -24,17 +19,33 @@ team2_greatwin = [1,3]
 
 def login():
     """Logs into useraccount"""
-    browser.open(url_login)
-    form = browser.get_form()
-    form['kennung'] = username
-    form['passwort'] = password
-    browser.submit_form(form)
+    while True:
+        username = input("Username: ")
+        password = input("Password: ")
+        browser.open(url_login)
+        form = browser.get_form()
+        form['kennung'] = username
+        form['passwort'] = password
+        browser.submit_form(form)
 
-
+        if not did_login_work():
+            print("Your email or password was incorrect. Please try again.")
+            print("")
+        else:
+            break
+        
+                
+def did_login_work():
+    """Returns true if function does not find any input possibility"""
+    for i in browser.find_all("input",type="text"):
+        if i.get("name") == "kennung":
+            return False
+    return True
+        
 def grab_odds():
     """Grabs latest odds for each match"""
     odds = []
-    browser.open(url_tippabgabe)
+    browser.open(url_betting)
     
     for i in browser.find_all("td", class_="kicktipp-wettquote"):
         quote = float(i.get_text())
@@ -67,7 +78,7 @@ def calc_results(odds):
 def get_keys():
     """Get necessary input keys"""
     formkeys = []
-    browser.open(url_tippabgabe)
+    browser.open(url_betting)
     
     for i in browser.find_all("input",type="text"):
         formkeys.append(i.get("name"))
@@ -78,22 +89,43 @@ def get_keys():
 def pass_results(results):
     """Submit calculated results and save them"""
     formkeys = get_keys()
-    browser.open(url_tippabgabe_mobile)
+    browser.open(url_betting_mobile)
     form = browser.get_form()
-    for i in range(0,9):
+    
+    #If some matches already have been played the results list needs to be adjusted
+    if len(formkeys) != len(results):
+        to_delete = len(results)-len(formkeys)
+        results = results[to_delete:]
+
+    for i in range(0,len(formkeys)):
         form[formkeys[i][0]] = results[i][0]
         form[formkeys[i][1]] = results[i][1]
     browser.submit_form(form)
 
 
-#def grab_tipplink():
-    #for i in browser.get_links(text="leon"):
-        #print(i)
- 
+def grab_beturl():
+    """Searches for the bet-url"""
+    for i in browser.find_all("a"):
+        link = i.get("href")
+        name = i.contents[0]
+        link = link.replace("/","")
+        if link == name:
+            return link
+            break
+
+def set_bet_urls(attachment):
+    """Sets bet-urls"""
+    global url_betting
+    global url_betting_mobile
+    url_betting = "http://www.kicktipp.de/" + attachment + "/tippabgabe"
+    url_betting_mobile = "http://m.kicktipp.de/" + attachment + "/tippabgabe"
+    
+    
 if __name__ == '__main__':
-    browser = robobrowser.RoboBrowser()
+    browser = robobrowser.RoboBrowser(parser="html.parser")
     login()
-    #grab_tipplink()
+    set_bet_urls(grab_beturl())
     my_odds = grab_odds()
     my_results = calc_results(my_odds)
     pass_results(my_results)
+    print("Done!")
